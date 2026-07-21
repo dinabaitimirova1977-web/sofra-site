@@ -212,6 +212,28 @@
   .foot-col a{text-decoration:none;font-size:14.5px;color:var(--ink);}
   .foot-col a:hover{color:var(--red);}
   .foot-bottom{margin-top:44px;padding-top:24px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;font-size:13px;color:var(--ink-soft);}
+  .menu-card{cursor:pointer;}
+  .dish-modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(32,26,23,0.55);
+    z-index:200;align-items:center;justify-content:center;padding:24px;
+  }
+  .dish-modal-overlay.open{display:flex;}
+  .dish-modal{
+    background:#fff;border-radius:var(--radius);max-width:440px;width:100%;
+    padding:28px;position:relative;max-height:86vh;overflow-y:auto;
+  }
+  .dish-modal .photo{width:100%;height:200px;border-radius:14px;overflow:hidden;margin-bottom:18px;}
+  .dish-modal .photo img{width:100%;height:100%;object-fit:cover;}
+  .dish-modal h3{font-size:24px;margin-bottom:6px;}
+  .dish-modal .cook{color:var(--ink-soft);font-size:14px;margin-bottom:14px;}
+  .dish-modal .desc{color:var(--ink-soft);font-size:15px;line-height:1.6;margin-bottom:18px;}
+  .dish-modal .row{display:flex;justify-content:space-between;align-items:center;border-top:1px dashed var(--line);padding-top:14px;margin-bottom:18px;}
+  .dish-modal .price{font-size:22px;color:var(--red);font-weight:700;}
+  .dish-modal-close{
+    position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:50%;
+    border:1px solid var(--line);background:#fff;cursor:pointer;font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+  }
 </style>
 </head>
 <body>
@@ -319,19 +341,19 @@
         <p>Цены указаны в тенге и устанавливаются самими поварами. Оформление заказа, оплата и доставка — в мобильном приложении Sofra. </p>
       </div>
       <div class="menu-grid">
-        <div class="menu-card">
+        <div class="menu-card" onclick="openDish('plov')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openDish('lagman')">
           <div class="photo"><img src="https://images.unsplash.com/photo-1671048116810-6f885b2b35a5?w=500&h=340&fit=crop&auto=format&q=70" alt="Плов — рис с мясом и морковью"></div>
           <h3>Плов</h3>
           <p class="cook">от повара Тест кук</p>
           <div class="row"><span class="price">2 500 ₸</span><span class="time">⏱ 40 мин</span></div>
         </div>
-        <div class="menu-card">
+        <div class="menu-card" onclick="openDish('lagman')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openDish('lagman')">
           <div class="photo"><img src="https://images.unsplash.com/photo-1743419612786-19d116bb8c40?w=500&h=340&fit=crop&auto=format&q=70" alt="Лагман — острый суп с лапшой"></div>
           <h3>Лагман</h3>
           <p class="cook">от повара Динара</p>
           <div class="row"><span class="price">2 200 ₸</span><span class="time">⏱ 25 мин</span></div>
         </div>
-        <div class="menu-card">
+        <div class="menu-card" onclick="openDish('manty')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openDish('manty')">
           <div class="photo"><img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&h=340&fit=crop&auto=format&q=70" alt="Манты на пару"></div>
           <h3>Манты</h3>
           <p class="cook">от повара Айгерим</p>
@@ -408,5 +430,59 @@
   </div>
 </footer>
 
+<div class="dish-modal-overlay" id="dish-modal" onclick="if(event.target===this)closeDish()">
+  <div class="dish-modal">
+    <button class="dish-modal-close" onclick="closeDish()" aria-label="Закрыть">✕</button>
+    <div class="photo"><img id="dm-photo" src="" alt=""></div>
+    <h3 id="dm-title"></h3>
+    <p class="cook" id="dm-cook"></p>
+    <p class="desc" id="dm-desc"></p>
+    <div class="row"><span class="price" id="dm-price"></span><span id="dm-time"></span></div>
+  </div>
+</div>
+
+<script>
+  const dishes = {
+    plov: {
+      title: "Плов",
+      cook: "от повара Тест кук",
+      photo: "https://images.unsplash.com/photo-1671048116810-6f885b2b35a5?w=500&h=340&fit=crop&auto=format&q=70",
+      desc: "Рассыпчатый рис с говядиной, морковью и луком, томлённый в казане на медленном огне по домашнему рецепту. Подаётся горячим, порция рассчитана на одного человека.",
+      price: "2 500 ₸",
+      time: "⏱ 40 мин"
+    },
+    lagman: {
+      title: "Лагман",
+      cook: "от повара Динара",
+      photo: "https://images.unsplash.com/photo-1743419612786-19d116bb8c40",
+      desc: "Наваристый суп с домашней лапшой ручной вытяжки, говядиной и овощами. В меру острый, готовится на заказ.",
+      price: "2 200 ₸",
+      time: "⏱ 25 мин"
+    },
+    manty: {
+      title: "Манты",
+      cook: "от повара Айгерим",
+      photo: "https://images.unsplash.com/photo-1563245372-f21724e3856d",
+      desc: "Манты на пару с сочной начинкой из рубленого мяса и лука. Подаются со сметаной, 6 штук в порции.",
+      price: "1 800 ₸",
+      time: "⏱ 30 мин"
+    }
+  };
+
+  function openDish(id) {
+    const d = dishes[id];
+    document.getElementById('dm-photo').src = d.photo;
+    document.getElementById('dm-title').textContent = d.title;
+    document.getElementById('dm-cook').textContent = d.cook;
+    document.getElementById('dm-desc').textContent = d.desc;
+    document.getElementById('dm-price').textContent = d.price;
+    document.getElementById('dm-time').textContent = d.time;
+    document.getElementById('dish-modal').classList.add('open');
+  }
+  function closeDish() {
+    document.getElementById('dish-modal').classList.remove('open');
+  }
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeDish(); });
+</script>
 </body>
 </html>
